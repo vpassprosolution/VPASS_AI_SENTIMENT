@@ -44,7 +44,7 @@ def generate_storyline(instrument):
         risk_reason = risk_info[4]
         storyline += f"⚠️ **Potential Risks & Cautions:**\n"
         storyline += f"- Risk Level: {risk_level}\n"
-        if "2025-" not in risk_reason:  # Ignore accidental timestamp
+        if isinstance(risk_reason, str):  # Ensure risk reason is a string
             storyline += f"- {risk_reason}\n"
         storyline += "📌 Understanding these risks is crucial for making informed trading decisions.\n\n"
     
