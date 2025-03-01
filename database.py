@@ -1,7 +1,8 @@
 import os
 import psycopg2
+from urllib.parse import urlparse
 
-# Use DATABASE_URL from Railway environment variables
+# Fetch DATABASE_URL from Railway environment variables
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Financial Instruments to Track (Database uses lowercase names)
@@ -19,7 +20,16 @@ def connect_db():
     """Establish connection to PostgreSQL database using DATABASE_URL."""
     try:
         if DATABASE_URL:
-            conn = psycopg2.connect(DATABASE_URL, sslmode="require")
+            # Parse DATABASE_URL properly
+            result = urlparse(DATABASE_URL)
+            conn = psycopg2.connect(
+                dbname=result.path.lstrip('/'),
+                user=result.username,
+                password=result.password,
+                host=result.hostname,
+                port=result.port,
+                sslmode="require"
+            )
             return conn
         else:
             raise Exception("DATABASE_URL not found in environment variables")
