@@ -1,7 +1,6 @@
 import datetime
 from database import fetch_all_data
 
-
 def generate_storyline(instrument):
     """Generate a structured financial storyline based on database data with human-like insights."""
     data = fetch_all_data(instrument)
@@ -19,13 +18,16 @@ def generate_storyline(instrument):
         storyline += f"💰 **Current Market Price:** ${price:.2f}\n"
         storyline += "📊 Traders are closely watching price movements, evaluating whether this is a turning point or just another phase in market volatility.\n\n"
     
-    # Sentiment Analysis
+    # Sentiment Analysis (Remove Duplicates)
     if data["news_articles"]:
+        seen_articles = set()
         storyline += "📰 **Market Sentiment & Key News:**\n"
         for news in data["news_articles"]:
-            description = news[4]  # Fetching sentiment from description instead of title
+            description = news[4]  # Fetching sentiment from description
             sentiment = news[7] if news[7] else "Neutral"
-            storyline += f"- {description} ({sentiment} Sentiment)\n"
+            if description not in seen_articles:
+                storyline += f"- {description} ({sentiment} Sentiment)\n"
+                seen_articles.add(description)
         storyline += "📌 These news events are shaping market expectations and creating momentum.\n\n"
     
     # Key Factors Affecting Sentiment
@@ -35,17 +37,18 @@ def generate_storyline(instrument):
     storyline += "- ⚠️ Major regulatory developments\n"
     storyline += "- 📰 Public sentiment from high-profile investors or influencers\n\n"
     
-    # Risk Analysis
+    # Risk Analysis (Fix Timestamp Issue)
     if data["news_risks"]:
         risk_info = data["news_risks"][0]
         risk_level = risk_info[3]
         risk_reason = risk_info[4]
         storyline += f"⚠️ **Potential Risks & Cautions:**\n"
         storyline += f"- Risk Level: {risk_level}\n"
-        storyline += f"- {risk_reason}\n"
+        if "2025-" not in risk_reason:  # Ignore accidental timestamp
+            storyline += f"- {risk_reason}\n"
         storyline += "📌 Understanding these risks is crucial for making informed trading decisions.\n\n"
     
-    # Price Predictions and Technical Levels
+    # Price Predictions
     if data["price_predictions"]:
         prediction_info = data["price_predictions"][0]
         trend = "🚀 Bullish" if prediction_info[2].lower() == "bullish" else "📉 Bearish"
@@ -67,7 +70,6 @@ def generate_storyline(instrument):
     storyline += "📌 Stay informed, manage risks wisely, and trade with confidence! 🚀"
     
     return storyline
-
 
 if __name__ == "__main__":
     instrument = "nasdaq"
