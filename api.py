@@ -1,25 +1,18 @@
 from fastapi import FastAPI
-import psycopg2
-import os
+from storyline_generator import generate_storyline
 
 app = FastAPI()
 
-# Fetch DATABASE_URL from Railway environment variables
-DATABASE_URL = os.getenv("DATABASE_URL")
+@app.get("/")
+def home():
+    """Root endpoint to check if the API is running."""
+    return {"status": "API is running", "available_routes": ["/storyline/{instrument}"]}
 
-@app.get("/test-db")
-def test_db():
-    """Test database connection and fetch sample data."""
-    try:
-        conn = psycopg2.connect(DATABASE_URL, sslmode="require")
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM market_prices LIMIT 5;")
-        data = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        return {"status": "Success", "data": data}
-    except Exception as e:
-        return {"status": "Failed", "error": str(e)}
+@app.get("/storyline/{instrument}")
+def get_storyline(instrument: str):
+    """Fetch the financial storyline for a given instrument."""
+    storyline = generate_storyline(instrument.lower())
+    return {"instrument": instrument, "storyline": storyline}
 
 if __name__ == "__main__":
     import uvicorn
