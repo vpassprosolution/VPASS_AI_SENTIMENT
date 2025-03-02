@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from storyline_generator import get_storyline
+import asyncio
 
 app = FastAPI()
 
@@ -9,11 +10,11 @@ def home():
     return {"status": "API is running", "available_routes": ["/storyline/?instrument="]}
 
 @app.get("/storyline/")
-def fetch_storyline(instrument: str):
+async def fetch_storyline(instrument: str):
     """Fetch the financial storyline for a given instrument."""
     try:
         formatted_instrument = instrument.replace("/", "-")  # Convert '/' to '-'
-        storyline = get_storyline(formatted_instrument)
+        storyline = await asyncio.create_task(get_storyline(formatted_instrument))  # Ensure async call
         
         if not storyline or "No sufficient data" in storyline:
             raise HTTPException(status_code=404, detail="No sufficient data available")
