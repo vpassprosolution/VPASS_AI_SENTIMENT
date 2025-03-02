@@ -83,3 +83,7 @@ async def get_storyline(instrument: str):
     storyline += "📌 Stay informed, manage risks wisely, and trade with confidence! 🚀"
     
     return {"instrument": decoded_instrument, "storyline": storyline}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
