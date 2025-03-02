@@ -1,18 +1,27 @@
 import datetime
-from database import fetch_all_data
+from fastapi import FastAPI, HTTPException
 from urllib.parse import unquote
+from database import fetch_all_data
 
-def generate_storyline(instrument):
-    """Generate a structured financial storyline based on database data with human-like insights."""
+app = FastAPI()
+
+@app.get("/storyline/{instrument}")
+async def get_storyline(instrument: str):
     # Decode URL-encoded instrument names (e.g., "eur%2Fusd" → "eur/usd")
-    instrument = unquote(instrument)
+    decoded_instrument = unquote(instrument)
     
-    data = fetch_all_data(instrument)
+    print(f"🔍 Debug: Received API request for instrument: {decoded_instrument}")
+    
+    # Fetch storyline from the database
+    data = fetch_all_data(decoded_instrument)
     
     if not any(data.values()):
-        return f"No sufficient data available for {instrument}."
+        print(f"⚠ Database Query Returned Empty for: {decoded_instrument}")
+        raise HTTPException(status_code=404, detail="Not Found")
     
-    storyline = f"📌 {instrument.upper()} Market Sentiment (Storyline Mode)\n\n"
+    print(f"✅ Database Query Found Data for: {decoded_instrument}")
+    
+    storyline = f"📌 {decoded_instrument.upper()} Market Sentiment (Storyline Mode)\n\n"
     storyline += "🔥 The market is making moves! Here's the full breakdown:\n\n"
     
     # Market Prices and Performance
@@ -73,9 +82,4 @@ def generate_storyline(instrument):
     
     storyline += "📌 Stay informed, manage risks wisely, and trade with confidence! 🚀"
     
-    return storyline
-
-if __name__ == "__main__":
-    instrument = "nasdaq"
-    story = generate_storyline(instrument)
-    print(story)
+    return {"instrument": decoded_instrument, "storyline": storyline}
