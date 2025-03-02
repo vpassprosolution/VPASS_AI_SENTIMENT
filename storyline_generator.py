@@ -1,8 +1,12 @@
 import datetime
 from database import fetch_all_data
+from urllib.parse import unquote
 
 def generate_storyline(instrument):
     """Generate a structured financial storyline based on database data with human-like insights."""
+    # Decode URL-encoded instrument names (e.g., "eur%2Fusd" → "eur/usd")
+    instrument = unquote(instrument)
+    
     data = fetch_all_data(instrument)
     
     if not any(data.values()):
