@@ -82,18 +82,12 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
         recommendation_info = data["trade_recommendations"][0]
         recommendation = recommendation_info[2].upper()
         confidence = recommendation_info[3]
-        entry_price = recommendation_info[4]  # Fetching entry price recommendation
-        stop_loss = entry_price - 0.01  # Stop loss 100 pips below entry
-        take_profit = entry_price + 0.01  # Take profit 100 pips above entry
-        storyline += f"📌 𝗙𝗜𝗡𝗔𝗟 𝗧𝗥𝗔𝗗𝗘 𝗥𝗘𝗖𝗢𝗠𝗠𝗘𝗡𝗗𝗔𝗧𝗜𝗢𝗡: {recommendation}! ({confidence}% confidence)\n"
-        storyline += f"📌 Suggested trade setup at price **${entry_price:.2f}**:\n"
-        storyline += f"- 🎯 **Entry Price:** ${entry_price:.2f}\n"
-        storyline += f"- 🚨 **Stop Loss:** ${stop_loss:.2f} (100 pips)\n"
-        storyline += f"- 📈 **Take Profit:** ${take_profit:.2f} (100 pips)\n\n"
+        storyline += f"📌 𝗙𝗜𝗡𝗔𝗟 𝗧𝗥𝗔𝗗𝗘 𝗥𝗘𝗖𝗢𝗠𝗠𝗘𝗡𝗗𝗔𝗧𝗜𝗢𝗡: {recommendation}! ({confidence}% confidence)\n\n"
     
     storyline += "📌 Stay informed, manage risks wisely, and trade with confidence! 🚀"
     
     return {"instrument": decoded_instrument, "storyline": storyline}
+
 
 if __name__ == "__main__":
     import uvicorn
