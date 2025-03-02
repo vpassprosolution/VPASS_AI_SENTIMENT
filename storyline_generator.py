@@ -25,7 +25,7 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
     print(f"✅ Database Query Found Data for: {decoded_instrument}")
     
     # 🔵 Storyline Generation Start
-    storyline = f"📌 𝗠𝗔𝗥𝗞𝗘𝗧 𝗦𝗘𝗡𝗧𝗜𝗠𝗘𝗡𝗧 & 𝗔𝗡𝗔𝗟𝗬𝗦𝗜𝗦\n\n"
+    storyline = f"📌 {decoded_instrument.upper()} 𝗠𝗔𝗥𝗞𝗘𝗧 𝗦𝗘𝗡𝗧𝗜𝗠𝗘𝗡𝗧 & 𝗔𝗡𝗔𝗟𝗬𝗦𝗜𝗦\n\n"
     
     # Market Prices and Performance
     if data.get("market_prices"):
@@ -38,13 +38,17 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
     if data.get("news_articles"):
         seen_articles = set()
         storyline += "📌 𝗞𝗘𝗬 𝗙𝗜𝗡𝗔𝗡𝗖𝗜𝗔𝗟 𝗡𝗘𝗪𝗦:\n"
-        for news in data["news_articles"][:5]:  # Get the top 5 best news articles
+        news_count = 0
+        for news in data["news_articles"]:
             title = news[3]  # Fetching news title
             sentiment = news[7] if news[7] else "Neutral"
             words = title.split()
             if 10 <= len(words) <= 15 and title not in seen_articles:
                 storyline += f"- {title} ({sentiment} Sentiment)\n"
                 seen_articles.add(title)
+                news_count += 1
+            if news_count >= 5:
+                break  # Ensure at least 5 news items are displayed
         storyline += "📌 These key news events are shaping market expectations.\n\n"
     
     # Key Factors Affecting Sentiment
@@ -78,11 +82,14 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
         recommendation_info = data["trade_recommendations"][0]
         recommendation = recommendation_info[2].upper()
         confidence = recommendation_info[3]
+        entry_price = recommendation_info[4]  # Fetching entry price recommendation
+        stop_loss = entry_price - 0.01  # Stop loss 100 pips below entry
+        take_profit = entry_price + 0.01  # Take profit 100 pips above entry
         storyline += f"📌 𝗙𝗜𝗡𝗔𝗟 𝗧𝗥𝗔𝗗𝗘 𝗥𝗘𝗖𝗢𝗠𝗠𝗘𝗡𝗗𝗔𝗧𝗜𝗢𝗡: {recommendation}! ({confidence}% confidence)\n"
-        storyline += "📌 Suggested trade setup:\n"
-        storyline += "- 🎯 **Entry Price:** Adjust based on market conditions.\n"
-        storyline += "- 🚨 **Stop Loss:** Set to minimize risk.\n"
-        storyline += "- 📈 **Take Profit:** Identify strong resistance levels.\n\n"
+        storyline += f"📌 Suggested trade setup at price **${entry_price:.2f}**:\n"
+        storyline += f"- 🎯 **Entry Price:** ${entry_price:.2f}\n"
+        storyline += f"- 🚨 **Stop Loss:** ${stop_loss:.2f} (100 pips)\n"
+        storyline += f"- 📈 **Take Profit:** ${take_profit:.2f} (100 pips)\n\n"
     
     storyline += "📌 Stay informed, manage risks wisely, and trade with confidence! 🚀"
     
