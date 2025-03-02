@@ -7,16 +7,16 @@ app = FastAPI()
 
 @app.get("/storyline/")
 async def get_storyline(instrument: str = Query(..., description="Financial instrument")):
-    # Decode URL-encoded instrument names (e.g., "eur%2Fusd" → "eur/usd")
-    decoded_instrument = unquote(instrument).replace("/", "-")  # Convert '/' to '-'
+    # Decode URL-encoded instrument names and standardize format
+    decoded_instrument = unquote(instrument).replace("/", "-")  # Ensure instrument format matches database
     
-    print(f"🔍 Debug: Received API request for instrument: {decoded_instrument}")
+    print(f"🔍 Debug: Attempting to fetch data for instrument: {decoded_instrument}")
     
     # Fetch storyline from the database
     data = fetch_all_data(decoded_instrument)
     
-    # Debugging: Print database results
-    print(f"🔍 Debug: Database results for {decoded_instrument}: {data}")
+    # Debugging: Print database query results
+    print(f"🔍 Debug: Database query returned: {data}")
     
     if not any(data.values()):
         print(f"⚠ Database Query Returned Empty for: {decoded_instrument}")
@@ -90,3 +90,4 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("storyline_generator:app", host="0.0.0.0", port=8000)
+
