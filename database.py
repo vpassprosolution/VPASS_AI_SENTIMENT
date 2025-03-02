@@ -2,8 +2,8 @@ import os
 import psycopg2
 from urllib.parse import urlparse
 
-# Fetch DATABASE_URL from Railway environment variables
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://your_user:your_password@your_host:your_port/your_db")
+
 
 # Financial Instruments to Track (Database uses lowercase names)
 INSTRUMENTS = {
