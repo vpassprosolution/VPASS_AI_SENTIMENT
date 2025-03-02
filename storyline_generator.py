@@ -8,7 +8,7 @@ app = FastAPI()
 @app.get("/storyline/")
 async def get_storyline(instrument: str = Query(..., description="Financial instrument")):
     # Decode URL-encoded instrument names (e.g., "eur%2Fusd" → "eur/usd")
-    decoded_instrument = unquote(instrument)
+    decoded_instrument = unquote(instrument).replace("/", "-")  # Convert '/' to '-'
     
     print(f"🔍 Debug: Received API request for instrument: {decoded_instrument}")
     
