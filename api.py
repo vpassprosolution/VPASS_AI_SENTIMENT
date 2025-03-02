@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from storyline_generator import generate_storyline
+from storyline_generator import get_storyline
+
 
 app = FastAPI()
 
