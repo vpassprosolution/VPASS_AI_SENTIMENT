@@ -7,7 +7,7 @@ app = FastAPI()
 
 @app.get("/storyline/")
 async def get_storyline(instrument: str = Query(..., description="Financial instrument")):
-    # Decode URL-encoded instrument names and standardize format
+    # Decode URL-encoded instrument names and ensure format consistency
     decoded_instrument = unquote(instrument).replace("/", "-")  # Ensure instrument format matches database
     
     print(f"🔍 Debug: Attempting to fetch data for instrument: {decoded_instrument}")
@@ -18,7 +18,7 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
     # Debugging: Print database query results
     print(f"🔍 Debug: Database query returned: {data}")
     
-    if not any(data.values()):
+    if not data or not any(data.values()):
         print(f"⚠ Database Query Returned Empty for: {decoded_instrument}")
         raise HTTPException(status_code=404, detail="Not Found")
     
@@ -28,14 +28,14 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
     storyline += "🔥 The market is making moves! Here's the full breakdown:\n\n"
     
     # Market Prices and Performance
-    if data["market_prices"]:
+    if data.get("market_prices"):
         price_info = data["market_prices"][0]
         price = price_info[2]
         storyline += f"💰 **Current Market Price:** ${price:.2f}\n"
         storyline += "📊 Traders are closely watching price movements, evaluating whether this is a turning point or just another phase in market volatility.\n\n"
     
     # Sentiment Analysis (Remove Duplicates)
-    if data["news_articles"]:
+    if data.get("news_articles"):
         seen_articles = set()
         storyline += "📰 **Market Sentiment & Key News:**\n"
         for news in data["news_articles"]:
@@ -53,8 +53,8 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
     storyline += "- ⚠️ Major regulatory developments\n"
     storyline += "- 📰 Public sentiment from high-profile investors or influencers\n\n"
     
-    # Risk Analysis (Fix Timestamp Issue)
-    if data["news_risks"]:
+    # Risk Analysis
+    if data.get("news_risks"):
         risk_info = data["news_risks"][0]
         risk_level = risk_info[3]
         risk_reason = risk_info[4]
@@ -65,7 +65,7 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
         storyline += "📌 Understanding these risks is crucial for making informed trading decisions.\n\n"
     
     # Price Predictions
-    if data["price_predictions"]:
+    if data.get("price_predictions"):
         prediction_info = data["price_predictions"][0]
         trend = "🚀 Bullish" if prediction_info[2].lower() == "bullish" else "📉 Bearish"
         confidence = prediction_info[3]
@@ -73,7 +73,7 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
         storyline += "📌 Analysts suggest watching key support and resistance levels closely.\n\n"
     
     # Trade Recommendations
-    if data["trade_recommendations"]:
+    if data.get("trade_recommendations"):
         recommendation_info = data["trade_recommendations"][0]
         recommendation = recommendation_info[2].upper()
         confidence = recommendation_info[3]
@@ -90,4 +90,3 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("storyline_generator:app", host="0.0.0.0", port=8000)
-
