@@ -1,12 +1,12 @@
 import datetime
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from urllib.parse import unquote
 from database import fetch_all_data
 
 app = FastAPI()
 
-@app.get("/storyline/{instrument}")
-async def get_storyline(instrument: str):
+@app.get("/storyline/")
+async def get_storyline(instrument: str = Query(..., description="Financial instrument")):
     # Decode URL-encoded instrument names (e.g., "eur%2Fusd" → "eur/usd")
     decoded_instrument = unquote(instrument)
     
