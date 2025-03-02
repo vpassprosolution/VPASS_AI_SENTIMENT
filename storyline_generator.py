@@ -34,8 +34,8 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
         storyline += f"💰 𝗖𝗨𝗥𝗥𝗘𝗡𝗧 𝗠𝗔𝗥𝗞𝗘𝗧 𝗣𝗥𝗜𝗖𝗘: ${price:.2f}\n"
         storyline += "📊 Investors are closely watching price movement, anticipating potential breakouts or corrections.\n\n"
     
-    # Sentiment Analysis (Best 5 News with 10-15 words, understandable by users)
-    if data.get("news_articles"):
+    # Sentiment Analysis (Ensure 5 News Articles Are Always Displayed)
+    if data.get("news_articles") and len(data["news_articles"]) >= 5:
         seen_articles = set()
         storyline += "📌 𝗞𝗘𝗬 𝗙𝗜𝗡𝗔𝗡𝗖𝗜𝗔𝗟 𝗡𝗘𝗪𝗦:\n"
         news_count = 0
@@ -50,6 +50,8 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
             if news_count >= 5:
                 break  # Ensure at least 5 news items are displayed
         storyline += "📌 These key news events are shaping market expectations.\n\n"
+    else:
+        storyline += "📌 𝗞𝗘𝗬 𝗙𝗜𝗡𝗔𝗡𝗖𝗜𝗔𝗟 𝗡𝗘𝗪𝗦: No relevant financial news available at this moment.\n\n"
     
     # Key Factors Affecting Sentiment
     storyline += "📌 𝗞𝗘𝗬 𝗙𝗔𝗖𝗧𝗢𝗥𝗦 𝗜𝗠𝗣𝗔𝗖𝗧𝗜𝗡𝗚 𝗣𝗥𝗜𝗖𝗘:\n"
@@ -87,7 +89,6 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
     storyline += "📌 Stay informed, manage risks wisely, and trade with confidence! 🚀"
     
     return {"instrument": decoded_instrument, "storyline": storyline}
-
 
 if __name__ == "__main__":
     import uvicorn
