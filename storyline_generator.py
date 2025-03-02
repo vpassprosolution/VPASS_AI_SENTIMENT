@@ -15,6 +15,9 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
     # Fetch storyline from the database
     data = fetch_all_data(decoded_instrument)
     
+    # Debugging: Print database results
+    print(f"🔍 Debug: Database results for {decoded_instrument}: {data}")
+    
     if not any(data.values()):
         print(f"⚠ Database Query Returned Empty for: {decoded_instrument}")
         raise HTTPException(status_code=404, detail="Not Found")
