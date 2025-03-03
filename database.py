@@ -2,7 +2,8 @@ import os
 import psycopg2
 from urllib.parse import urlparse
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://your_user:your_password@your_host:your_port/your_db")
+# Use the correct DATABASE_URL from Railway
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:vVMyqWjrqgVhEnwyFifTQxkDtPjQutGb@interchange.proxy.rlwy.net:30451/railway")
 
 # Financial Instruments to Track (Database uses lowercase names)
 INSTRUMENTS = {
@@ -19,7 +20,6 @@ def connect_db():
     """Establish connection to PostgreSQL database using DATABASE_URL."""
     try:
         if DATABASE_URL:
-            # Parse DATABASE_URL properly
             result = urlparse(DATABASE_URL)
             conn = psycopg2.connect(
                 dbname=result.path.lstrip('/'),
@@ -45,7 +45,6 @@ def fetch_latest_data(table, instrument, date_column, limit=5):
 
     cursor = conn.cursor()
     instrument_name = INSTRUMENTS.get(instrument.lower(), instrument).lower()
-
     print(f"🔍 Fetching {limit} records from table: {table}, for instrument: {instrument_name}")
 
     query = f"""
@@ -56,7 +55,6 @@ def fetch_latest_data(table, instrument, date_column, limit=5):
     """
     cursor.execute(query, (instrument_name, limit))
     data = cursor.fetchall()
-
     print(f"✅ Data fetched from {table} for {instrument_name}: {data}")
 
     cursor.close()
@@ -64,7 +62,7 @@ def fetch_latest_data(table, instrument, date_column, limit=5):
     return data if data else None
 
 def fetch_all_data(instrument):
-    """Fetch latest data from all 5 tables for a given instrument."""
+    """Fetch latest data from all tables for a given instrument."""
     instrument_name = INSTRUMENTS.get(instrument.lower(), instrument).lower()
     print(f"Fetching all data for: {instrument_name}")
 
