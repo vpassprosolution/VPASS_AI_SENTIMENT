@@ -34,7 +34,7 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
         storyline += f"💰 𝗖𝗨𝗥𝗥𝗘𝗡𝗧 𝗠𝗔𝗥𝗞𝗘𝗧 𝗣𝗥𝗜𝗖𝗘: ${price:.2f}\n"
         storyline += "📊 Investors are closely watching price movement, anticipating potential breakouts or corrections.\n\n"
     
-    # Key Financial News (Always Fetch 5 News Articles from Database)
+    # Key Financial News (Always Fetch Exactly 5 News Articles from Database)
     if data.get("news_articles") and len(data["news_articles"]) > 0:
         storyline += "📌 𝗞𝗘𝗬 𝗙𝗜𝗡𝗔𝗡𝗖𝗜𝗔𝗟 𝗡𝗘𝗪𝗦:\n"
         for news in data["news_articles"][:5]:  # Fetch exactly 5 news articles
