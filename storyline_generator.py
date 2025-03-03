@@ -85,6 +85,12 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
         print(f"❌ Error generating storyline: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+# Debugging: Print the fetched data before processing
+print("🔍 Debug: Fetched Data from Database:", data)
+
+
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("storyline_generator:app", host="0.0.0.0", port=8000)

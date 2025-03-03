@@ -4,7 +4,6 @@ from urllib.parse import urlparse
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://your_user:your_password@your_host:your_port/your_db")
 
-
 # Financial Instruments to Track (Database uses lowercase names)
 INSTRUMENTS = {
     "gold": "gold",
@@ -30,14 +29,15 @@ def connect_db():
                 port=result.port,
                 sslmode="require"
             )
+            print("✅ Database connection successful")
             return conn
         else:
             raise Exception("DATABASE_URL not found in environment variables")
     except Exception as e:
-        print(f"Database connection failed: {e}")
+        print(f"❌ Database connection failed: {e}")
         return None
 
-def fetch_latest_data(table, instrument, date_column, limit=1):
+def fetch_latest_data(table, instrument, date_column, limit=5):
     """Fetch latest data from a specific table for a given instrument."""
     conn = connect_db()
     if not conn:
@@ -46,8 +46,7 @@ def fetch_latest_data(table, instrument, date_column, limit=1):
     cursor = conn.cursor()
     instrument_name = INSTRUMENTS.get(instrument.lower(), instrument).lower()
 
-    # Debug: Print the actual query and instrument being used
-    print(f"Fetching data from table: {table}, for instrument: {instrument_name}")
+    print(f"🔍 Fetching {limit} records from table: {table}, for instrument: {instrument_name}")
 
     query = f"""
         SELECT * FROM {table}
@@ -58,8 +57,7 @@ def fetch_latest_data(table, instrument, date_column, limit=1):
     cursor.execute(query, (instrument_name, limit))
     data = cursor.fetchall()
 
-    # Debug: Print the fetched data
-    print(f"Data fetched from {table} for {instrument_name}: {data}")
+    print(f"✅ Data fetched from {table} for {instrument_name}: {data}")
 
     cursor.close()
     conn.close()
@@ -72,7 +70,7 @@ def fetch_all_data(instrument):
 
     return {
         "market_prices": fetch_latest_data("market_prices", instrument_name, "timestamp", limit=1),
-        "news_articles": fetch_latest_data("news_articles", instrument_name, "published_at", limit=3),
+        "news_articles": fetch_latest_data("news_articles", instrument_name, "published_at", limit=5),  # Ensure 5 news articles
         "news_risks": fetch_latest_data("news_risks", instrument_name, "timestamp", limit=1),
         "price_predictions": fetch_latest_data("price_predictions", instrument_name, "timestamp", limit=1),
         "trade_recommendations": fetch_latest_data("trade_recommendations", instrument_name, "timestamp", limit=1),
