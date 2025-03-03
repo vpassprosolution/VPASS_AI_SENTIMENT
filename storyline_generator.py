@@ -34,18 +34,18 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
         storyline += f"💰 𝗖𝗨𝗥𝗥𝗘𝗡𝗧 𝗠𝗔𝗥𝗞𝗘𝗧 𝗣𝗥𝗜𝗖𝗘: ${price:.2f}\n"
         storyline += "📊 Investors are closely watching price movement, anticipating potential breakouts or corrections.\n\n"
     
-    # Key Financial News (Ensure at least 5 News Articles Are Displayed)
+    # Key Financial News (Ensure at least 5 News Articles Are Displayed with Description, No Duplicates)
     if data.get("news_articles") and len(data["news_articles"]) > 0:
         seen_articles = set()
         storyline += "📌 𝗞𝗘𝗬 𝗙𝗜𝗡𝗔𝗡𝗖𝗜𝗔𝗟 𝗡𝗘𝗪𝗦:\n"
         news_count = 0
         for news in data["news_articles"]:
-            title = news[3]  # Fetching news title
+            description = news[4]  # Fetching news description
             sentiment = news[7] if news[7] else "Neutral"
-            words = title.split()
-            if 10 <= len(words) <= 15 and title not in seen_articles:
-                storyline += f"- {title} ({sentiment} Sentiment)\n"
-                seen_articles.add(title)
+            words = description.split()
+            if 10 <= len(words) <= 15 and description not in seen_articles:
+                storyline += f"- {description} ({sentiment} Sentiment)\n"
+                seen_articles.add(description)
                 news_count += 1
             if news_count >= 5:
                 break  # Ensure at least 5 news items are displayed
