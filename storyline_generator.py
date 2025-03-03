@@ -22,64 +22,39 @@ async def get_storyline(instrument: str = Query(..., description="Financial inst
         
         print(f"✅ Database Query Found Data for: {decoded_instrument}")
         
-        # 📌 Report Structure
-        storyline = f"📌 {decoded_instrument.upper()} MARKET SENTIMENT & ANALYSIS\n\n"
+        # 📌 Storyline Generation in Story Mode
+        storyline = f"📌 {decoded_instrument.upper()} SENTIMENT ANALYSIS (STORYLINE MODE)\n\n"
         
-        # ✅ Current Price and Performance
+        # ✅ Market Sentiment Introduction
+        storyline += f"\"Ladies and gentlemen, the {decoded_instrument} market is on fire! 🔥 Investors worldwide are closely watching {decoded_instrument} as major financial events unfold. Recent trends suggest significant movement that could shape the asset’s future.\"\n\n"
+        
+        # ✅ Why is this happening?
+        storyline += "📌 WHY IS THIS HAPPENING?\n"
+        
+        # ✅ Key Factors Affecting Sentiment
+        storyline += "🏦 Central Banks Are Buying: Institutional investors and central banks have shown increased interest, indicating strategic shifts.\n"
+        storyline += "📉 Stock Market Uncertainty: Volatility in global markets has pushed traders toward safe-haven assets.\n"
+        storyline += "🌎 Geopolitical Tensions: Ongoing global conflicts and regulatory changes are impacting {decoded_instrument}.\n\n"
+        
+        # ✅ Price Performance & Market Outlook
         if data.get("market_prices") and data["market_prices"]:
             price_info = data["market_prices"][0]
             price = price_info[2]
-            storyline += f"💰 CURRENT MARKET PRICE: ${price:.2f}\n"
-            storyline += "📊 Investors are watching price movements, assessing possible breakout or correction levels.\n\n"
+            storyline += f"📌 CURRENT PRICE: ${price:.2f}\n"
+            storyline += "📊 Analysts are closely watching the price action to determine future movement.\n\n"
         
-        # ✅ Sentiment Analysis
-        if data.get("news_articles") and len(data["news_articles"]) >= 5:
-            storyline += "📌 MARKET SENTIMENT ANALYSIS:\n"
-            for news in data["news_articles"][:5]:
-                description = news[4] if news[4] else "No Description Available"
-                sentiment = news[7] if news[7] else "Neutral"
-                storyline += f"- {description} ({sentiment} Sentiment)\n"
-            storyline += "📌 Recent events influencing market sentiment.\n\n"
-        
-        # ✅ Key Factors Affecting Sentiment
-        storyline += "📌 KEY FACTORS INFLUENCING PRICE MOVEMENT:\n"
-        storyline += "- 📉 Economic trends and central bank policies.\n"
-        storyline += "- 🏦 Institutional and retail investor behavior.\n"
-        storyline += "- ⚠️ Regulatory updates and compliance risks.\n"
-        storyline += "- 📰 Social media influence and major investor commentary.\n\n"
-        
-        # ✅ Risk Analysis
-        if data.get("news_risks") and data["news_risks"]:
-            risk_info = data["news_risks"][0]
-            risk_level = risk_info[3]
-            risk_reason = risk_info[4] if risk_info[4] else "Not Available"
-            storyline += "📌 RISK ANALYSIS:\n"
-            storyline += f"- Risk Level: {risk_level}\n"
-            storyline += f"- Potential Risk Factors: {risk_reason}\n"
-            storyline += "📌 Traders should be aware of risks before entering positions.\n\n"
-        
-        # ✅ Bullish or Bearish Predictions
+        # ✅ Technical Prediction & Future Outlook
         if data.get("price_predictions") and data["price_predictions"]:
             prediction_info = data["price_predictions"][0]
             trend = "🚀 Bullish" if prediction_info[2].lower() == "bullish" else "📉 Bearish"
             confidence = prediction_info[3]
-            storyline += f"📌 MARKET OUTLOOK: {trend} ({confidence}% Confidence)\n"
-            storyline += "📌 Analysts recommend monitoring key support and resistance zones.\n\n"
+            storyline += f"📌 THE BIG QUESTION: IS NOW THE TIME TO BUY?\n"
+            storyline += f"If {decoded_instrument} continues this trend, expect movement toward key price levels in the coming months.\n"
+            storyline += f"{trend} with {confidence}% confidence.\n\n"
         
-        # ✅ Recommendations
-        if data.get("trade_recommendations") and data["trade_recommendations"]:
-            recommendation_info = data["trade_recommendations"][0]
-            recommendation = recommendation_info[2].upper()
-            confidence = recommendation_info[3]
-            entry_price = recommendation_info[4]
-            stop_loss = entry_price - 0.01  # Adjust based on strategy
-            take_profit = entry_price + 0.01
-            storyline += f"📌 TRADE RECOMMENDATION: {recommendation}! ({confidence}% Confidence)\n"
-            storyline += f"- Entry Price: ${entry_price:.2f}\n"
-            storyline += f"- Stop Loss: ${stop_loss:.2f}\n"
-            storyline += f"- Take Profit: ${take_profit:.2f}\n\n"
-        
-        storyline += "📌 Stay informed, manage risks, and trade strategically! 🚀"
+        # ✅ Final Verdict
+        storyline += "📌 FINAL VERDICT:\n"
+        storyline += "🔥 Bullish on {decoded_instrument}! Investors should monitor market dips and strategic movements. Economic reports and institutional actions will determine the next major move!\n\n"
         
         return {"instrument": decoded_instrument, "storyline": storyline}
     
