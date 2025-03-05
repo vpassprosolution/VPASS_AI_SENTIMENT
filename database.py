@@ -44,15 +44,21 @@ def fetch_latest_data(table, instrument, date_column, limit=5):
         return None
 
     cursor = conn.cursor()
-    instrument_name = INSTRUMENTS.get(instrument.lower(), instrument).lower()
-    print(f"🔍 Fetching {limit} records from table: {table}, for instrument: {instrument_name}")
 
-    query = f"""
-        SELECT * FROM {table}
-        WHERE LOWER(instrument) = %s
-        ORDER BY {date_column} DESC
-        LIMIT %s
-    """
+# Ensure "dow-jones" is converted correctly to match database format
+if instrument.lower() == "dow-jones":
+    instrument_name = "dow jones"  # ✅ Correctly formatted for database
+else:
+    instrument_name = INSTRUMENTS.get(instrument.lower(), instrument,).lower()  # ✅ Properly get instrument name
+
+print(f"🔍 Fetching {limit} records from table: {table}, for instrument: {instrument_name}")
+
+query = f"""
+    SELECT * FROM {table}
+    WHERE LOWER(instrument) = %s
+    ORDER BY {date_column} DESC
+    LIMIT %s
+"""
     cursor.execute(query, (instrument_name, limit))
     data = cursor.fetchall()
     print(f"✅ Data fetched from {table} for {instrument_name}: {data}")
