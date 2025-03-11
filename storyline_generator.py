@@ -36,17 +36,17 @@ async def get_storyline(instrument: str = Query(...)):
     storyline += "2. Support from major economic news.\n"
     storyline += "3. Positive market momentum.\n\n"
 
-    # Risks & Cautions (now pulling from news_articles if no risks exist)
+    # Risks & Cautions (Proper Formatting of Risks & News)
     storyline += "**Risks and Cautions:**\n"
     news_risks = data.get("news_risks", [])
     news_articles = data.get("news_articles", [])
 
     if news_risks:
         for i, risk in enumerate(news_risks[:2], start=1):  # Show up to 2 risk entries
-            storyline += f"{i}. {risk[1]}\n"  # Assuming risk info is in column index 1
+            storyline += f"{i}. {risk[3]} (Risk Level: {risk[2]})\n"  # Assuming (instrument, risk_level, risk_type)
     elif news_articles:  # If no risks exist, use news articles as alternative risks
         for i, article in enumerate(news_articles[:2], start=1):  # Get only 2 latest news articles
-            storyline += f"{i}. {article[3]} - {article[1]}\n"  # Assuming (title, source) format
+            storyline += f"{i}. {article[3]} - {article[1]}\n"  # Assuming (title, source)
     else:
         storyline += "1. Potential volatility from upcoming economic news.\n"
         storyline += "2. General market uncertainty may cause fluctuations.\n\n"
