@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Query
 from urllib.parse import unquote
 from database import fetch_all_data
 
-app = FastAPI\(\)
+app = FastAPI()
 
 @app.get\("/storyline/"\)
 async def get_storyline\(instrument: str = Query\(...\)\):
