@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Query
 from urllib.parse import unquote
-from database import fetch_all_data, fetch_latest_news
+from database import fetch_all_data
 
 app = FastAPI()
 
@@ -38,10 +38,10 @@ async def get_storyline(instrument: str = Query(...)):
 
     # Risks & Cautions (with news integration)
     storyline += "**Risks and Cautions:**\n"
-    news_articles = fetch_latest_news(decoded_instrument, limit=2)
+    news_articles = data.get("news_articles", [])
     if news_articles:
-        for i, article in enumerate(news_articles, start=1):
-            storyline += f"{i}. {article['title']} - {article['source']}\n"
+        for i, article in enumerate(news_articles[:2], start=1):  # Get only 2 latest news articles
+            storyline += f"{i}. {article[0]} - {article[1]}\n"  # Assuming (title, source) in DB
     else:
         storyline += "1. Potential volatility from upcoming economic news.\n"
         storyline += "2. General market uncertainty may cause fluctuations.\n\n"
