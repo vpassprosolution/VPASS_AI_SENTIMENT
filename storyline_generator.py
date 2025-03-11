@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Query
 from urllib.parse import unquote
-from database import fetch_all_data
+from database import fetch_all_data, fetch_latest_news
 
 app = FastAPI()
 
@@ -36,10 +36,15 @@ async def get_storyline(instrument: str = Query(...)):
     storyline += "2. Support from major economic news.\n"
     storyline += "3. Positive market momentum.\n\n"
 
-    # Risks & Cautions (simplified)
+    # Risks & Cautions (with news integration)
     storyline += "**Risks and Cautions:**\n"
-    storyline += "1. Potential volatility from upcoming economic news.\n"
-    storyline += "2. General market uncertainty may cause fluctuations.\n\n"
+    news_articles = fetch_latest_news(decoded_instrument, limit=2)
+    if news_articles:
+        for i, article in enumerate(news_articles, start=1):
+            storyline += f"{i}. {article['title']} - {article['source']}\n"
+    else:
+        storyline += "1. Potential volatility from upcoming economic news.\n"
+        storyline += "2. General market uncertainty may cause fluctuations.\n\n"
 
     # Recommendations clearly simplified and powerful
     entry = current_price
