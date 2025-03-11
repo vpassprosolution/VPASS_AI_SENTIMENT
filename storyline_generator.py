@@ -14,7 +14,7 @@ async def get_storyline(instrument: str = Query(...)):
 
     current_price = data["market_prices"][0][2]
 
-    storyline = f"{decoded_instrument.upper()} Sentiment Analysis\n\n"
+    storyline = f"**Vessa has {decoded_instrument.upper()} Sentiment Analysis:**\n\n"
 
     # Sentiment Analysis (simplified, powerful)
     storyline += "**Sentiment Analysis:**\n"
@@ -23,7 +23,7 @@ async def get_storyline(instrument: str = Query(...)):
 
     # Current Price & Performance
     storyline += "**Current Price and Performance:**\n"
-    storyline += f"The current price of {decoded_instrument} is ${current_price:.2f}. "
+    storyline += f"The current price of {decoded_instrument} is **${current_price:.2f}**. "
     storyline += "Price is consolidating, indicating potential near-term breakout opportunities.\n\n"
 
     # Predictions (simplified clearly)
@@ -36,20 +36,20 @@ async def get_storyline(instrument: str = Query(...)):
     storyline += "2. Support from major economic news.\n"
     storyline += "3. Positive market momentum.\n\n"
 
-    # Risks & Cautions (Proper Formatting of Risks & News)
+    # Risks & Cautions (Limit to 4 Titles, Hide Source)
     storyline += "**Risks and Cautions:**\n"
     news_risks = data.get("news_risks", [])
     news_articles = data.get("news_articles", [])
+    risks_added = 0
 
     if news_risks:
-        for i, risk in enumerate(news_risks[:2], start=1):  # Show up to 2 risk entries
-            storyline += f"{i}. {risk[3]} (Risk Level: {risk[2]})\n"  # Assuming (instrument, risk_level, risk_type)
-    elif news_articles:  # If no risks exist, use news articles as alternative risks
-        for i, article in enumerate(news_articles[:2], start=1):  # Get only 2 latest news articles
-            storyline += f"{i}. {article[3]} - {article[1]}\n"  # Assuming (title, source)
-    else:
-        storyline += "1. Potential volatility from upcoming economic news.\n"
-        storyline += "2. General market uncertainty may cause fluctuations.\n\n"
+        for risk in news_risks[:4]:  # Limit to 4 items
+            storyline += f"- **{risk[3]}**\n"
+            risks_added += 1
+    
+    if risks_added < 4 and news_articles:  # If less than 4 risks, fill with news titles
+        for article in news_articles[:4 - risks_added]:
+            storyline += f"- **{article[3]}**\n"
 
     # Recommendations clearly simplified and powerful
     entry = current_price
@@ -57,8 +57,8 @@ async def get_storyline(instrument: str = Query(...)):
     take_profit = current_price * 1.015  # 1.5% above entry
 
     storyline += "**Recommendations:**\n"
-    storyline += f"A buy recommendation is suitable at current price (${entry:.2f}). "
-    storyline += f"Suggested stop-loss at ${stop_loss:.2f}, take-profit target at ${take_profit:.2f} to manage risk effectively.\n"
+    storyline += f"A buy recommendation is suitable at current price (**${entry:.2f}**). "
+    storyline += f"Suggested stop-loss at **${stop_loss:.2f}**, take-profit target at **${take_profit:.2f}** to manage risk effectively.\n"
 
     return {"instrument": decoded_instrument, "storyline": storyline}
 
