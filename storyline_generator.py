@@ -37,7 +37,8 @@ async def get_storyline(instrument: str = Query(...)):
     storyline += "3. Positive market momentum.\n\n"
 
     # Risks & Cautions (Limit to 4 Titles, Hide Source)
-    storyline += "<b>Risks and Cautions:</b>\n"
+    storyline += "<b>Risks and Cautions:</b>
+\n"
     news_risks = data.get("news_risks", [])
     news_articles = data.get("news_articles", [])
     risks_added = 0
@@ -56,7 +57,11 @@ async def get_storyline(instrument: str = Query(...)):
     stop_loss = current_price * 0.985  # 1.5% below entry
     take_profit = current_price * 1.015  # 1.5% above entry
 
-    storyline += "<b>Recommendations:</b>\n"
+    storyline += "
+<details>
+<summary><b>Click to View Recommendations</b></summary>
+<b>Recommendations:</b>
+\n"
     storyline += f"A buy recommendation is suitable at current price (<b>${entry:.2f}</b>). "
     storyline += f"Suggested stop-loss at <b>${stop_loss:.2f}</b>, take-profit target at <b>${take_profit:.2f}</b> to manage risk effectively.\n"
 
@@ -65,3 +70,5 @@ async def get_storyline(instrument: str = Query(...)):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("storyline_generator:app", host="0.0.0.0", port=8000)
+
+</details>
