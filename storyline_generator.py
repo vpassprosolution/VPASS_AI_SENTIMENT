@@ -17,12 +17,12 @@ async def get_storyline(instrument: str = Query(...)):
     storyline = f"Vessa has {decoded_instrument.upper()} Sentiment Analysis:\n\n"
 
     # Sentiment Analysis (simplified, powerful)
-    storyline += "*Sentiment Analysis:*\n"
+    storyline += "Sentiment Analysis:\n"
     storyline += f"The market sentiment for {decoded_instrument} appears neutral to bullish. "
     storyline += "Recent news and economic developments are supportive, highlighting its safe-haven status amid geopolitical tensions and economic uncertainty.\n\n"
 
     # Current Price & Performance
-    storyline += "*Current Price and Performance*\n"
+    storyline += "Current Price and Performance:\n"
     storyline += f"The current price of {decoded_instrument} is ${current_price:.2f}. "
     storyline += "Price is consolidating, indicating potential near-term breakout opportunities.\n\n"
 
@@ -59,8 +59,8 @@ async def get_storyline(instrument: str = Query(...)):
     take_profit = current_price * 1.015  # 1.5% above entry
 
     storyline += "\nClick below to view recommendations:\n"
-    storyline += "[View Recommendations](tg://msg?text=Recommendations:\n"
-    storyline += f"A buy recommendation is suitable at current price (${entry:.2f}). "
+    storyline += "||Recommendations:
+A buy recommendation is suitable at current price (${entry:.2f}). Suggested stop-loss at ${stop_loss:.2f}, take-profit target at ${take_profit:.2f} to manage risk effectively.||. "
     storyline += f"Suggested stop-loss at ${stop_loss:.2f}, take-profit target at ${take_profit:.2f} to manage risk effectively.)"
 
     return {"instrument": decoded_instrument, "storyline": storyline}
