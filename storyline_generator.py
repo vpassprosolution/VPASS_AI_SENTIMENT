@@ -13,10 +13,14 @@ async def get_storyline(instrument: str = Query(...)):
     if not data or not data.get("market_prices"):
         raise HTTPException(status_code=404, detail="No data available")
 
-    current_price = data["market_prices"][0][2]
-    inflation = next((float(d[2]) for d in data.get("macro_data", []) if d[1].lower() == "inflation rate"), None)
-    gdp = next((float(d[2]) for d in data.get("macro_data", []) if d[1].lower() == "gdp growth"), None)
-    fed_rate = next((float(d[2]) for d in data.get("macro_data", []) if "interest rate" in d[1].lower()), None)
+    try:
+        current_price = data["market_prices"][0][2]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reading market price: {e}")
+
+    inflation = next((float(d[2]) for d in data.get("macro_data", []) if d[0].lower() == "inflation rate"), None)
+    gdp = next((float(d[2]) for d in data.get("macro_data", []) if d[0].lower() == "gdp growth"), None)
+    fed_rate = next((float(d[2]) for d in data.get("macro_data", []) if "interest rate" in d[0].lower()), None)
 
     # ✨ Start storyline
     storyline = f"🟨 Vessa has {raw_name} Sentiment Analysis\n"
@@ -25,7 +29,7 @@ async def get_storyline(instrument: str = Query(...)):
     storyline += "\n🧠 Sentiment Analysis:\n"
     storyline += f"The market sentiment for {raw_name} appears neutral to bullish. "
     storyline += "Vessa’s AI models detect growing investor caution due to lingering inflation and mixed macroeconomic signals. "
-    storyline += "At the same time, gold’s status as a safe-haven asset is strengthening amid geopolitical tension and Fed uncertainty.\n"
+    storyline += f"At the same time, {raw_name}'s status as a safe-haven asset is strengthening amid geopolitical tension and Fed uncertainty.\n"
 
     # 💰 Current Price
     storyline += "\n💰 Current Price and Performance:\n"
@@ -35,7 +39,10 @@ async def get_storyline(instrument: str = Query(...)):
     # 📈 Prediction
     storyline += "\n📈 Bullish or Bearish Predictions:\n"
     storyline += "Bullish momentum dominates.\n"
-    storyline += f"Macroeconomic stress, high inflation ({inflation:.1f}%), and cautious Fed guidance support {raw_name}. "
+    if inflation:
+        storyline += f"Macroeconomic stress, high inflation ({inflation:.1f}%), and cautious Fed guidance support {raw_name}. "
+    else:
+        storyline += f"Macroeconomic stress and cautious Fed guidance support {raw_name}. "
     storyline += f"Price remains well-supported above ${current_price - 12:.0f}, with upside potential toward ${current_price + 45:.0f} and beyond if fear builds in the broader market.\n"
 
     # 🔍 Key Factors
@@ -61,17 +68,15 @@ async def get_storyline(instrument: str = Query(...)):
         for article in news_articles[:4 - risks_added]:
             storyline += f"{article[3]}\n"
 
-    # Recommendations clearly simplified and powerful
+    # ✅ Recommendations
     entry = current_price
-    stop_loss = current_price * 0.985  # 1.5% below entry
-    take_profit = current_price * 1.015  # 1.5% above entry
+    stop_loss = current_price * 0.985
+    take_profit = current_price * 1.015
 
-    storyline += "Recommendations:\n"
-    storyline += f"A buy recommendation is suitable at current price (${entry:.2f}). "
-    storyline += f"Suggested stop-loss at ${stop_loss:.2f}, take-profit target at ${take_profit:.2f} to manage risk effectively.\n"
+    storyline += "\n✅ Recommendations from Vessa:\n"
+    storyline += "💼 Action: BUY\n"
+    storyline += f"💵 Entry Price: ${entry:.2f}\n"
+    storyline += f"🛡 Stop-Loss: ${stop_loss:.2f}\n"
+    storyline += f"🎯 Take-Profit: ${take_profit:.2f}\n"
 
     return {"instrument": decoded_instrument, "storyline": storyline}
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("storyline_generator:app", host="0.0.0.0", port=8000)
