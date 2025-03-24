@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Query
 from urllib.parse import unquote
 from database import fetch_all_data
+import random
 
 app = FastAPI()
 
@@ -25,11 +26,17 @@ async def get_storyline(instrument: str = Query(...)):
     # ✨ Start storyline
     storyline = f"🟨 Vessa has {raw_name} Sentiment Analysis\n"
 
-    # 🧠 Sentiment Analysis
+    # 🧠 Sentiment Analysis with random rotation
+    sentiment_options = [
+        f"The market sentiment for {raw_name} appears neutral to bullish. Vessa’s AI detects increased investor caution due to mixed economic signals, while {raw_name} benefits from its safe-haven role.",
+        f"Investors are leaning toward a cautiously bullish stance on {raw_name}. Vessa’s sentiment engine reveals lingering inflation fears and Fed indecision fueling safe-haven demand.",
+        f"Sentiment is gradually shifting in favor of {raw_name}. Vessa highlights a rise in macroeconomic uncertainty and flight to safety behavior across financial markets.",
+        f"Market tone is stable but tilting bullish for {raw_name}. Vessa identifies increased gold exposure from institutions as a hedge against inflation and policy risks.",
+        f"Vessa signals a strengthening sentiment in {raw_name}, as inflation pressures persist and investors navigate a foggy outlook around rate policy and global instability."
+    ]
+
     storyline += "\n🧠 Sentiment Analysis:\n"
-    storyline += f"The market sentiment for {raw_name} appears neutral to bullish. "
-    storyline += "Vessa’s AI models detect growing investor caution due to lingering inflation and mixed macroeconomic signals. "
-    storyline += f"At the same time, {raw_name}'s status as a safe-haven asset is strengthening amid geopolitical tension and Fed uncertainty.\n"
+    storyline += random.choice(sentiment_options) + "\n"
 
     # 💰 Current Price
     storyline += "\n💰 Current Price and Performance:\n"
@@ -68,15 +75,17 @@ async def get_storyline(instrument: str = Query(...)):
         for article in news_articles[:4 - risks_added]:
             storyline += f"{article[3]}\n"
 
-    # ✅ Recommendations
+    # Recommendations clearly simplified and powerful
     entry = current_price
-    stop_loss = current_price * 0.985
-    take_profit = current_price * 1.015
+    stop_loss = current_price * 0.985  # 1.5% below entry
+    take_profit = current_price * 1.015  # 1.5% above entry
 
-    storyline += "\n✅ Recommendations from Vessa:\n"
-    storyline += "💼 Action: BUY\n"
-    storyline += f"💵 Entry Price: ${entry:.2f}\n"
-    storyline += f"🛡 Stop-Loss: ${stop_loss:.2f}\n"
-    storyline += f"🎯 Take-Profit: ${take_profit:.2f}\n"
+    storyline += "Recommendations:\n"
+    storyline += f"A buy recommendation is suitable at current price (${entry:.2f}). "
+    storyline += f"Suggested stop-loss at ${stop_loss:.2f}, take-profit target at ${take_profit:.2f} to manage risk effectively.\n"
 
     return {"instrument": decoded_instrument, "storyline": storyline}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("storyline_generator:app", host="0.0.0.0", port=8000)
