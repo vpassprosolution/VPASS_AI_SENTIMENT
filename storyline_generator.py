@@ -18,9 +18,9 @@ async def get_storyline(instrument: str = Query(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error reading market price: {e}")
 
-    inflation = next((float(d[2]) for d in data.get("macro_data", []) if d[0].lower() == "inflation rate"), None)
-    gdp = next((float(d[2]) for d in data.get("macro_data", []) if d[0].lower() == "gdp growth"), None)
-    fed_rate = next((float(d[2]) for d in data.get("macro_data", []) if "interest rate" in d[0].lower()), None)
+    inflation = next((float(d[1]) for d in data.get("macro_data", []) if d[0].lower() == "inflation rate"), None)
+    gdp = next((float(d[1]) for d in data.get("macro_data", []) if d[0].lower() == "gdp growth"), None)
+    fed_rate = next((float(d[1]) for d in data.get("macro_data", []) if "interest rate" in d[0].lower()), None)
 
     # ✨ Start storyline
     storyline = f"🟨 Vessa has {raw_name} Sentiment Analysis\n"
