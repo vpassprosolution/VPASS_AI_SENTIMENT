@@ -24,7 +24,7 @@ async def get_storyline(instrument: str = Query(...)):
     fed_rate = next((float(d[1]) for d in data.get("macro_data", []) if "interest rate" in d[0].lower()), None)
 
     # ✨ Start storyline
-    storyline = f"🟨 Vessa has {raw_name} Sentiment Analysis\n"
+    storyline = f"🏨 Vessa has {raw_name} Sentiment Analysis\n"
 
     # 🧠 Sentiment Analysis with random rotation
     sentiment_options = [
@@ -40,23 +40,23 @@ async def get_storyline(instrument: str = Query(...)):
 
     # 💰 Current Price
     storyline += "\n💰 Current Price and Performance:\n"
-    storyline += f"The current price of {raw_name} is ${current_price:.2f}.\n"
-    storyline += "Vessa sees price consolidation near this level, signaling that the market is preparing for a potential breakout — either in response to Fed policy, inflation data, or global risk sentiment.\n"
+    storyline += f"The current price of {raw_name} is ${current_price:.2f}. "
+    storyline += "Vessa sees price consolidation near this level, signaling that the market is preparing for a potential breakout — either in response to Fed policy, inflation data, or global risk sentiment."
 
     # 📈 Prediction
-    storyline += "\n📈 Bullish or Bearish Predictions:\n"
-    storyline += "Bullish momentum dominates.\n"
+    storyline += "\n\n📈 Bullish or Bearish Predictions:\n"
+    storyline += "Bullish momentum dominates. "
     if inflation:
         storyline += f"Macroeconomic stress, high inflation ({inflation:.1f}%), and cautious Fed guidance support {raw_name}. "
     else:
         storyline += f"Macroeconomic stress and cautious Fed guidance support {raw_name}. "
-    storyline += f"Price remains well-supported above ${current_price - 12:.0f}, with upside potential toward ${current_price + 45:.0f} and beyond if fear builds in the broader market.\n"
+    storyline += f"Price remains well-supported above ${current_price - 12:.0f}, with upside potential toward ${current_price + 45:.0f} and beyond if fear builds in the broader market."
 
     # 🔍 Key Factors
-    storyline += "\n🔍 Key Factors Influencing Gold:\n"
+    storyline += "\n\n🔍 Key Factors Influencing Gold:\n"
     if inflation: storyline += f"🔥 Inflation remains sticky — still above 2.5% Fed target.\n"
     if gdp: storyline += f"📉 GDP slowdown to {gdp:.1f}% raises concerns over economic momentum.\n"
-    storyline += "📊 Stable unemployment helps confidence but offers no upside surprise.\n"
+    storyline += "📈 Stable unemployment helps confidence but offers no upside surprise.\n"
     storyline += "🌐 Geopolitical tensions and war risk are pushing investors to safety.\n"
     if fed_rate: storyline += f"🏦 Fed holding rates at {fed_rate:.2f}%, with no clear rate-cut timeline.\n"
 
@@ -75,6 +75,9 @@ async def get_storyline(instrument: str = Query(...)):
         for article in news_articles[:4 - risks_added]:
             storyline += f"{article[3]}\n"
 
+    # ✅ Add space before Recommendations
+    storyline += "\n"
+
     # Recommendations clearly simplified and powerful
     entry = current_price
     stop_loss = current_price * 0.985  # 1.5% below entry
@@ -85,6 +88,7 @@ async def get_storyline(instrument: str = Query(...)):
     storyline += f"Suggested stop-loss at ${stop_loss:.2f}, take-profit target at ${take_profit:.2f} to manage risk effectively.\n"
 
     return {"instrument": decoded_instrument, "storyline": storyline}
+
 
 if __name__ == "__main__":
     import uvicorn
