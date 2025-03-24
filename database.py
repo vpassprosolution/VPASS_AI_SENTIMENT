@@ -45,7 +45,6 @@ def fetch_latest_data(table, instrument, date_column, limit=5):
 
     cursor = conn.cursor()
 
-    # Ensure "dow-jones" is converted correctly to match database format
     if instrument.lower() == "dow-jones":
         instrument_name = "dow jones"
     else:
@@ -60,7 +59,7 @@ def fetch_latest_data(table, instrument, date_column, limit=5):
         LIMIT %s
     """
 
-    cursor.execute(query, (instrument_name, limit))  # ✅ FIXED INDENTATION HERE
+    cursor.execute(query, (instrument_name, limit))
     data = cursor.fetchall()
     print(f"✅ Data fetched from {table} for {instrument_name}: {data}")
 
@@ -68,21 +67,40 @@ def fetch_latest_data(table, instrument, date_column, limit=5):
     conn.close()
     return data if data else None
 
+def fetch_latest_macro_data(limit=6):
+    conn = connect_db()
+    if not conn:
+        return []
+
+    cursor = conn.cursor()
+
+    query = """
+        SELECT indicator, value, unit, last_updated
+        FROM macro_data
+        ORDER BY last_updated DESC
+        LIMIT %s
+    """
+    cursor.execute(query, (limit,))
+    data = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+    return data
+
 def fetch_all_data(instrument):
-    """Fetch latest data from all tables for a given instrument."""
     instrument_name = INSTRUMENTS.get(instrument.lower(), instrument).lower()
     print(f"Fetching all data for: {instrument_name}")
 
     return {
         "market_prices": fetch_latest_data("market_prices", instrument_name, "timestamp", limit=1),
-        "news_articles": fetch_latest_data("news_articles", instrument_name, "published_at", limit=5),  # Ensure 5 news articles
+        "news_articles": fetch_latest_data("news_articles", instrument_name, "published_at", limit=5),
         "news_risks": fetch_latest_data("news_risks", instrument_name, "timestamp", limit=1),
         "price_predictions": fetch_latest_data("price_predictions", instrument_name, "timestamp", limit=1),
         "trade_recommendations": fetch_latest_data("trade_recommendations", instrument_name, "timestamp", limit=1),
+        "macro_data": fetch_latest_macro_data()
     }
 
 if __name__ == "__main__":
-    # Example test: Fetch all data for Nasdaq using lowercase names
     instrument = "nasdaq"
     full_data = fetch_all_data(instrument)
     print("Nasdaq Data:", full_data)
