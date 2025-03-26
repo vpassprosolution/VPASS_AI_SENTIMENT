@@ -53,7 +53,7 @@ async def get_storyline(instrument: str = Query(...)):
     storyline += f"Price remains well-supported above ${current_price - 12:.0f}, with upside potential toward ${current_price + 45:.0f} and beyond if fear builds in the broader market."
 
     # 🔍 Key Factors
-    storyline += "\n\n🔍 Key Factors Influencing Gold:\n"
+    storyline += "\n\n🔍 Key Factors Influencing {raw_name}:\n"
     if inflation: storyline += f"🔥 Inflation remains sticky — still above 2.5% Fed target.\n"
     if gdp: storyline += f"📉 GDP slowdown to {gdp:.1f}% raises concerns over economic momentum.\n"
     storyline += "📈 Stable unemployment helps confidence but offers no upside surprise.\n"
@@ -65,7 +65,7 @@ async def get_storyline(instrument: str = Query(...)):
     news_articles = data.get("news_articles", [])
     for article in news_articles[:3]:
         description = article[3].strip()
-        storyline += f"⚠️ {description}\n"
+        storyline += f" {description}\n"
 
     # 📌 Recommendations
     storyline += "\n📌 Recommendations:\n"
