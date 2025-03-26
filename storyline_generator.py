@@ -53,50 +53,38 @@ async def get_storyline(instrument: str = Query(...)):
     storyline += f"Price remains well-supported above ${current_price - 12:.0f}, with upside potential toward ${current_price + 45:.0f} and beyond if fear builds in the broader market."
 
     # 🔍 Key Factors
-    storyline += "\n\n🔍 Key Factors Influencing Gold:\n"
+    storyline += "\n\n🔍 Key Factors Influencing {raw_name}:\n"
     if inflation: storyline += f"🔥 Inflation remains sticky — still above 2.5% Fed target.\n"
     if gdp: storyline += f"📉 GDP slowdown to {gdp:.1f}% raises concerns over economic momentum.\n"
     storyline += "📈 Stable unemployment helps confidence but offers no upside surprise.\n"
     storyline += "🌐 Geopolitical tensions and war risk are pushing investors to safety.\n"
     if fed_rate: storyline += f"🏦 Fed holding rates at {fed_rate:.2f}%, with no clear rate-cut timeline.\n"
 
-        # ⚠️ Risks
+    # ⚠️ Risks and Cautions
     storyline += "\n⚠️ Risks and Cautions:\n"
     news_risks = data.get("news_risks", [])
-    news_articles = data.get("news_articles", [])
-    risks_added = 0
-
-    # Add risks from news_risks table
+    count = 0
     if news_risks:
-        for risk in news_risks[:4]:
-            risk_instrument = risk[1].upper().replace("-", "/")
-            reason = risk[2].capitalize()
-            storyline += f"⚠️ {risk_instrument} shows elevated risk due to **{reason}**.\n"
-            risks_added += 1
+        for risk in news_risks:
+            description = risk[2].strip()
+            word_count = len(description.split())
+            if 5 <= word_count <= 15:
+                storyline += f"⚠️ {description}\n"
+                count += 1
+            if count == 3:
+                break
+    if count == 0:
+        storyline += "No significant risks detected from recent news.\n"
 
-    # If not enough risks found, use descriptions from fallback news
-    if risks_added < 4 and news_articles:
-        for article in news_articles[:4 - risks_added]:
-            title = article[2]
-            description = article[3]
-            sentiment = article[6]
-            storyline += f"📰 {title} — *{sentiment} sentiment*\n🧾 {description}\n"
-
-    # ✅ Add space before Recommendations
-    storyline += "\n"
-
-    # ✅ Recommendations simplified and powerful
+    # 📌 Recommendations
+    storyline += "\n📌 Recommendations:\n"
     entry = current_price
     stop_loss = current_price * 0.985
     take_profit = current_price * 1.015
-
-    storyline += "📌 Recommendations:\n"
     storyline += f"A buy recommendation is suitable at current price (${entry:.2f}). "
     storyline += f"Suggested stop-loss at ${stop_loss:.2f}, take-profit target at ${take_profit:.2f} to manage risk effectively.\n"
 
     return {"instrument": decoded_instrument, "storyline": storyline}
-
-
 
 if __name__ == "__main__":
     import uvicorn
